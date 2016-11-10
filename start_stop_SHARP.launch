@@ -1,0 +1,4 @@
+<launch>
+	<node name="sharp_node" pkg="jus_follower" type="sharp_publisher.py"/>
+	<node name="sharp_reader" pkg="jus_follower" type="sharp_subscriber.py" output="screen"/>
+</launch>
