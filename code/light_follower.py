@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Follow the motion of an object in front of Sharp sensor moving forward-backward
+# Follow a specific intensity of a light.
 
 import rospy
 from std_msgs.msg import Int32
@@ -8,23 +8,23 @@ from std_msgs.msg import Int32
 # Maestro channel assignment
 izq = 4
 dcho = 5
-# Threshold distance: below, change rotation wheel
-min_dist= 50 # 23.1 # Corresponds to an output of 250 from Sharp sensor
+# Threshold lux: below, stop rotation wheel
+min_lux=200 # 23.1 # Corresponds to an output of 250 from Sharp sensor
 
 # BEGIN CALLBACK
 def callback(msg):
-    global dist
-    dist= msg.data
+    global lux
+    lux= msg.data
 # END CALLBACK
 
-dist= 50 #Anything to start
+lux= 250 #Anything to start
 
 # Used for rospy.Rate (should equal or muliple of rate in 'control' node)
-cycle = 0.5
+cycle = 0.7
 
 class Follower():
 	def __init__(self):
-		rospy.init_node('follower_control')
+		rospy.init_node('light_follower_control')
 		rospy.on_shutdown(self.shutdown)
 		# BEGIN SUBSCRIBER
 		sub = rospy.Subscriber('sharp_data', Int32, callback)
@@ -48,7 +48,7 @@ class Follower():
 		# Initial element in each list
 		#t[0]= rospy.Time.now()- rospy.Duration(cycle)
 		t[0]= rospy.get_time()
-		d[0]= dist
+		d[0]= lux
 		v[0]= 0
 		# Obtain the sign of a number
 		sign = lambda x: (x>0) - (x<0)
@@ -66,7 +66,7 @@ class Follower():
 			v[k+1]= v[k]
 		    # Last element on top (LIFO stack)
 		    t[0]= rospy.get_time()
-		    d[0]= dist
+		    d[0]= lux
 		    D0=d[0]-d[1]
 		    T0=t[0]-t[1]
 		    v[0]=D0/T0
@@ -75,13 +75,13 @@ class Follower():
 			# GO AHEAD towards the target
 			speed_L= -1
 			speed_R=  1
-			if dist < min_dist:
+			if lux < min_lux:
 			    driving_forward = -1
 		    else:
 			# Move backward
-			speed_L=  1
-			speed_R= -1
-			if dist >= min_dist:
+			speed_L=  0
+			speed_R=  0
+			if lux >= min_lux:
 			    driving_forward = 1
 
 		    if driving_forward <> driving_before:
@@ -95,8 +95,8 @@ class Follower():
 		    self.write_right.publish(speed_R)
 
 		    print "Driving forward  ", driving_forward
-		    print "Time stamp  (s)  = ", t[0]        
-		    print "Distance to target (cm)   = ", d[0]
+		    print "Time stamp  (s)  = ", t[0]
+		    print "luxes   = ", d[0]
 		    print "Relative speed of target (cm/s)= ", v[0]
 		    print ""
 		    print "Speed_L= ", speed_L, "Speed_R =", speed_R

@@ -10,7 +10,7 @@ from std_msgs.msg import Int32
 # BEGIN CALLBACK
 def callback(msg):
     print ""
-    print "--------- distance=", msg.data, "cm"
+    print "--------- luminosidad=", msg.data, "luxes"
 # END CALLBACK
 
 
