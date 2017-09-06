@@ -19,7 +19,11 @@ from std_msgs.msg import Int32
 # Maestro channel assignment
 sharp=1
 # Sharp equation coefficients: dist(cm)= a / (Output-b) - c
-coefV_a_Luxes=1.58
+lux=0
+coef0=-1.59
+coef1=3.19
+coef2=-0.02
+coef3=3.24/100000
 # Used for rospy.Rate (should equal or muliple of rate in 'control' node)
 cycle = 0.7
 
@@ -35,8 +39,9 @@ rate = rospy.Rate(1/cycle)
 
 while not rospy.is_shutdown():
         Output=s.getPosition(sharp)
-        lux=coefV_a_Luxes*Output
+        lux=coef0+coef1*Output+coef2*Output^2+coef3*Output^3
         pub.publish(lux)
         rate.sleep()
+        print "luxes", lux
 # END LOOP
 # END ALL
