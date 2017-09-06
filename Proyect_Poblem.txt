@@ -1,0 +1,11 @@
+No podemos testear el código del proyecto debido a problemas en la toma de
+medidas por parte del sensor de luminosidad.
+
+Estos problemas se producen debido a que el suelo en el que proyectamos la luz
+para que la capte el sensor no refleja la luz de forma especular, es decir,
+no refleja toda la luz que recibe.Esto hace que la toma de medidas por parte 
+del sensor no corresponda a la que emitamos.
+
+Necesitaríamos un suelo de un material que reflejara toda la luminosidad que 
+le llegara, para que se pudiera validar los valores recibidos por el sensor y
+así seguir testeando el proyecto.
